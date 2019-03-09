@@ -89,7 +89,6 @@
       data: {
         leibnizOverflow: false,
         eulerOverflow: false,
-        total_items: -1,
         leibnizItems: [],
         eulerItems: [],
         leibnizBestEstimate: 3,
@@ -165,14 +164,12 @@
             evtSourceLeibniz.close();
           }
           this.leibnizLoading = false;
-          this.total_items = -1;
         },
         resetEuler: function() {
           if (evtSourceEuler) {
             evtSourceEuler.close();
           }
           this.eulerLoading = false;
-          this.total_items = -1;
         }
       }
     })
