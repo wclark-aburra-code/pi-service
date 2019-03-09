@@ -42,7 +42,7 @@
 (defn send-result
   [event-ch count-num rdcts]
   (doseq [item rdcts]
-    (Thread/sleep 150)
+    (Thread/sleep 150) ; we must use a naive throttle here to prevent an overflow on the core.async CSP channel, event-ch
     (async/put! event-ch (str item))
   )
 )
