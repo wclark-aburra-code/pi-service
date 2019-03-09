@@ -35,8 +35,8 @@
             <div class="jumbotron">
               <h1>Euler</h1>
               <form v-on:submit.prevent="runEuler">
-                <button class="btn btn-success" id="run-euler-btn" :disabled="runDisabled" v-on:click="runEuler" type="button">{{ eulerButtonLabel }}</button>
                 <button class="btn btn-danger" id="reset-euler-btn" :disabled="!eulerLoading" v-on:click="resetEuler" type="button">STOP</button>
+                <button class="btn btn-success" id="run-euler-btn" :disabled="runDisabled" v-on:click="runEuler" type="button">{{ eulerButtonLabel }}</button>
               </form>
               <div>{{ eulerItems.length }} iterations:</div>
               <div>{{ eulerBestEstimate }}</div>
@@ -53,8 +53,8 @@
             <div class="jumbotron">
               <h1>Leibniz</h1>
               <form v-on:submit.prevent="runLeibniz">
-                <button class="btn btn-success" id="run-leibniz-btn" :disabled="runDisabled" v-on:click="runLeibniz" type="button">{{ leibnizButtonLabel }}</button>
                 <button class="btn btn-danger" id="reset-leibniz-btn" :disabled="!leibnizLoading" v-on:click="resetLeibniz" type="button">STOP</button>
+                <button class="btn btn-success" id="run-leibniz-btn" :disabled="runDisabled" v-on:click="runLeibniz" type="button">{{ leibnizButtonLabel }}</button>
               </form>
               <div>{{ leibnizItems.length }} iterations:</div>
               <div>{{ leibnizBestEstimate }}</div>
