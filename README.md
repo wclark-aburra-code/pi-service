@@ -2,7 +2,7 @@ This is a web service that generates estimates of the irrational number Pi accor
 
 There is a client-side view for testing this service, located at <localhost>/index.html. This HTML page includes Vue logic for consuming each stream of server-sent events, and loading the resultant data into the user interface.
 
-There is an alternate implementation of the view in React and ClojureScript that will soon be posted. The Vue implementation had the advantage of using a comparatively lightweight JS framework. By allowing the JavaScript to exist in a single small HTML file without a dedicated static-file server, the client-side can be served from the same Pedestal server as the Clojure service, thus circumventing the common difficulties with cross-browser CORS configuration for server-sent events.
+Previously a client-side component was written in React to interact with this service. The Vue implementation has the advantage of using a comparatively lightweight JS framework. By allowing the JavaScript to exist in a single small HTML file without a dedicated static-file server, the client-side can be served from the same Pedestal server as the Clojure service, thus circumventing the common difficulties with cross-browser CORS configuration for server-sent events.
 
 In order to run this application, please install Java, Clojure, and Leiningen (in that order). You can use "lein run" in the terminal, from the application's root directory, to start the Pedestal server. This will run both the Pi estimation service and the serving of the client-side HTML view at <localhost>/index.html.
 
