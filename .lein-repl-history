@@ -1,0 +1,15 @@
+  (defn seq-of-nodes-new
+       [func]
+           (map func (iterate (partial + 1) 0))
+    )
+  (defn euler-node [n]
+         (let [current (+ n 1)] (/ 6.0 (* current current)))
+       )
+(def euler-reductions
+              (map (fn [sum] (Math/sqrt sum))  (reductions + (seq-of-nodes-new euler-node) ) ) 
+(take 100 euler-reductions)
+)
+(def euler-reductions
+(map (fn [sum] (Math/sqrt sum))  (reductions + (seq-of-nodes-new euler-node) )) ) 
+(take 100 euler-reductions)
+exit

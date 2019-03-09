@@ -1,0 +1,183 @@
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+      .first-row {
+          margin-top: 24px;
+      }
+      .list-group {
+          max-height: 300px;
+          margin-bottom: 10px;
+          overflow:scroll;
+          -webkit-overflow-scrolling: touch;
+      }
+      .jumbotron {
+        margin-left: 2px;
+        margin-right: 2px;
+        height: 590px;
+      }
+      ul {
+        margin-top: 12px;
+      }
+      .overflowMsg {
+        font-weight: bold;
+        font-size: 12px;
+        color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
+        <div class="row first-row">
+          <div class="col-sm">
+            <div class="jumbotron">
+              <h1>Euler</h1>
+              <form v-on:submit.prevent="runEuler">
+                <button class="btn btn-success" id="run-euler-btn" :disabled="leibnizLoading" v-on:click="runEuler" type="button">{{ eulerButtonLabel }}</button>
+                <button class="btn btn-danger" id="reset-euler-btn" :disabled="!eulerLoading" v-on:click="resetEuler" type="button">STOP</button>
+              </form>
+              <div>{{ eulerItems.length }} iterations:</div>
+              <div>{{ eulerBestEstimate }}</div>
+              <ul class="list-group" id="euler-items-list">
+                <estimate v-for="item in eulerItems" :key="item.cnt" v-bind:item="item">
+                </estimate>
+              </ul>
+              <div class="overflowMsg" v-if="eulerOverflow">
+                 Scroll through list to see more results
+              </div>
+            </div>
+          </div>
+          <div class="col-sm">
+            <div class="jumbotron">
+              <h1>Leibniz</h1>
+              <form v-on:submit.prevent="runLeibniz">
+                <button class="btn btn-success" id="run-leibniz-btn" :disabled="eulerLoading" v-on:click="runLeibniz" type="button">{{ leibnizButtonLabel }}</button>
+                <button class="btn btn-danger" id="reset-leibniz-btn" :disabled="!leibnizLoading" v-on:click="resetLeibniz" type="button">STOP</button>
+              </form>
+              <div>{{ leibnizItems.length }} iterations:</div>
+              <div>{{ leibnizBestEstimate }}</div>
+              <ul class="list-group" id="leibniz-items-list">
+                <estimate v-for="item in leibnizItems" :key="item.cnt" v-bind:item="item">
+                </estimate>
+              </ul>
+              <div class="overflowMsg" v-if="leibnizOverflow">
+                 Scroll through list to see more results
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+    <script type="application/javascript">
+    Vue.filter('reverse', function(value) {
+      // slice to make a copy of array, then reverse the copy
+      return value.slice().reverse();
+    });
+    Vue.component('estimate', {
+      props: ['item'],
+      template: '<li class="list-group-item">{{ item.text }}</li>'
+    });
+    let evtSourceLeibniz;
+    let evtSourceEuler;
+
+    let app = new Vue({
+      el: '#app',
+      data: {
+        leibnizOverflow: false,
+        eulerOverflow: false,
+        total_items: -1,
+        leibnizItems: [],
+        eulerItems: [],
+        leibnizBestEstimate: 3,
+        eulerBestEstimate: 3,
+        loading: false,
+        eulerLoading: false,
+        leibnizLoading: false
+      },
+      computed: {
+        leibnizButtonLabel: function() {
+          return (this.leibnizLoading ? 'Loading…' : 'Go');
+        },
+        eulerButtonLabel: function() {
+          return (this.eulerLoading ? 'Loading…' : 'Go');
+        }
+      },
+      methods: {
+        runLeibniz: function() {
+
+          this.resetEuler();
+          this.leibnizItems = [];
+          this.leibnizOverflow = false;
+          const streamUrl = 'http://localhost:8080/leibniz';
+
+          evtSourceLeibniz = new EventSource(streamUrl);
+          this.leibnizLoading = true;
+          this.loading = true;
+
+          let i = 0;
+          evtSourceLeibniz.onmessage = (e) => {
+
+            const item = JSON.parse(e.data);
+
+            this.leibnizItems.push({text: e.data, cnt: i});
+            this.leibnizBestEstimate = e.data;
+            i += 1;
+            if (i > 6) {
+              this.leibnizOverflow = true;
+            }
+          };
+          evtSourceLeibniz.addEventListener('close', function (e) {
+            evtSourceLeibniz.close();
+            this.loading = false;
+          }, false);
+        },
+        runEuler: function() {
+          let i=0;
+          this.resetLeibniz();
+          this.eulerItems = [];
+          const streamUrl = 'http://localhost:8080/euler';
+
+          evtSourceEuler = new EventSource(streamUrl);
+          this.eulerLoading = true;
+          this.eulerOverflow = false;
+          this.loading = true;
+
+          evtSourceEuler.onmessage = (e) => {
+            const item = JSON.parse(e.data);
+            this.eulerItems.push({text: e.data, cnt: i});
+            this.eulerBestEstimate = e.data;
+            i += 1;
+            if (i > 6) { // can only show 6 items, 0<=i<=5
+              this.eulerOverflow = true
+            }
+          };
+          evtSourceEuler.addEventListener('close', function (e) {
+            evtSourceEuler.close();
+            this.loading = false;
+          }, false);
+        },
+        resetLeibniz: function() {
+          if (evtSourceLeibniz) {
+            evtSourceLeibniz.close();
+          }
+          this.leibnizLoading = false;
+          this.total_items = -1;
+        },
+        resetEuler: function() {
+          if (evtSourceEuler) {
+            evtSourceEuler.close();
+          }
+          this.eulerLoading = false;
+          this.total_items = -1;
+        }
+      }
+    })
+
+    </script>
+
+  </body>
+</html>
