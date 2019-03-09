@@ -9,5 +9,5 @@ In order to run this application, please install Java, Clojure, and Leiningen (i
 Future challenges include parallelizing the Clojure Pi estimates, lowering the throttle rate, and tuning the core.async channel's buffer size accordingly; multi-channel communication for the server-sent events, to enable both algorithms to run and pass estimate messages to the client at the same time; maintaining state of the "reductions" lazy lists state after connection reset; more explicit logic to close connections, as the current connection logic depends on Pedestal's automatic response to an EventSource being closed by the client.
 
 <sub>
-Previous implementations of this Clojure logic can be found here: https://github.com/billyclark3/clojurepi and here: https://github.com/billyclark3/goPi/blob/master/piEstimate.go
+Previous implementations of this pi-estimation logic can be found here: https://github.com/billyclark3/clojurepi and here: https://github.com/billyclark3/goPi/blob/master/piEstimate.go. The Clojure logic is much improved in this version, particularly the use of lazy sequences.
 </sub>
